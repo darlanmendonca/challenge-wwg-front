@@ -1,0 +1,24 @@
+.horizontal-scroller {
+  white-space: nowrap;
+  overflow-x: auto;
+  padding-left: .5rem;
+  padding-right: .5rem;
+
+  @media (min-width: 768px) {
+    padding-left: calc(.5rem + 50px);
+    padding-right: calc(.5rem + 50px);
+  }
+
+  .mn-card {
+    display: inline-block;
+    height: 100px;
+    width: 100px;
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    & + .mn-card {
+      margin-left: 1em;
+    }
+  }
+}

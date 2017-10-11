@@ -28,7 +28,7 @@
   },
   "dependencies": {
     "angular": "^1.6.4",
-    "minimalist": "git+https://github.com/reserva-facil/minimalist.git",
+    "minimalist": "git+https://github.com/reserva-facil/minimalist.git#main-scss",
     "open-color": "^1.5.1"
   },
   "devDependencies": {

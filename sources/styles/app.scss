@@ -1,6 +1,7 @@
 @import '../../node_modules/open-color/open-color.scss';
 
-// @import '../../node_modules/minimalist/app.scss';
-
-@import 'identity/typography';
 @import 'identity/background';
+@import 'identity/typography';
+@import 'identity/input';
+@import 'identity/horizontal-scroller';
+@import 'identity/trending';

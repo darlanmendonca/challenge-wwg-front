@@ -1,14 +1,64 @@
 html
   head
-    title minimalist
+    title wwg (where we go)
     meta(name='viewport' content='width=device-width, user-scalable=no')
 
     script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/angular-resource/1.6.5/angular-resource.js')
 
     link(rel='stylesheet' href='/vendor.css')
+    link(rel='stylesheet' href='/minimalist.css')
 
   body
-    p hello
+    .mn-layout-container
+      h2 where we go?
+
+    section
+      .mn-layout-container
+        p First, identify yourself
+
+        mn-form
+          .mn-layout-row
+            mn-radio(placeholder='Login' checked)
+            mn-radio(placeholder='Signup')
+
+          .mn-layout-column.mn-layout-sm-row
+            mn-email.flex(placeholder='Email' required)
+            mn-password.flex(placeholder='Password' required)
+            mn-password.flex(placeholder='Confirm Password' required)
+
+    section
+      .mn-layout-container
+        p Choose restaurants that you want to go
+      .horizontal-scroller
+        .mn-card.padding test 1
+        .mn-card.padding test 2
+        .mn-card.padding test 3
+        .mn-card.padding test 4
+        .mn-card.padding test 5
+        .mn-card.padding test 6
+        .mn-card.padding test 7
+        .mn-card.padding test 8
+        .mn-card.padding test 9
+        .mn-card.padding test 10
+        .mn-card.padding test 11
+        .mn-card.padding test 12
+        .mn-card.padding test 13
+        .mn-card.padding test 14
+        .mn-card.padding test 15
+        .mn-card.padding test 16
+        .mn-card.padding test 17
+        .mn-card.padding test 18
+        .mn-card.padding test 19
+        .mn-card.padding test 20
+
+    section
+      .mn-layout-container
+        p The restaurants most voted are
+
+        .mn-layout-row.align-center.trending
+          .mn-card.padding.flex test 1
+          .mn-card.padding.flex test 2
+          .mn-card.padding.flex test 3
 
     script(src='/vendor.js')
