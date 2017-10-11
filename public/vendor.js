@@ -63,7 +63,7 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 54);
+/******/ 	return __webpack_require__(__webpack_require__.s = 62);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -534,7 +534,7 @@ function MnActionSheetCustomElement() {
   }
 
   if (!window.customElements.get('mn-action-sheet')) {
-    window.customElements.define('mn-action-sheet', __webpack_require__(21))
+    window.customElements.define('mn-action-sheet', __webpack_require__(29))
   }
 
   return window.customElements.get('mn-action-sheet')
@@ -1403,14 +1403,27 @@ module.exports = g;
 
 /***/ }),
 /* 8 */
+/***/ (function(module, exports) {
+
+angular
+  .module('app')
+  .config(ApiConfig)
+
+function ApiConfig(RestangularProvider) {
+  RestangularProvider.setBaseUrl('http://localhost:4000')
+}
+
+
+/***/ }),
+/* 9 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(20) // main file of minimalist
-__webpack_require__(19) // directives
+__webpack_require__(28) // main file of minimalist
+__webpack_require__(27) // directives
 
-__webpack_require__(52)
-__webpack_require__(12)
-__webpack_require__(50)
+__webpack_require__(60)
+__webpack_require__(20)
+__webpack_require__(58)
 
 angular.module('app', [
   'minimalist',
@@ -1421,7 +1434,24 @@ angular.module('app', [
 
 
 /***/ }),
-/* 9 */
+/* 10 */
+/***/ (function(module, exports) {
+
+angular
+  .module('app')
+  .config(AuthConfig)
+
+function AuthConfig($authProvider) {
+  $authProvider.loginUrl = '//localhost:4000/users/authenticate'
+  $authProvider.authHeader = 'Authorization'
+  $authProvider.tokenType = 'Bearer'
+  $authProvider.authToken = ''
+  $authProvider.storageType = 'localStorage'
+}
+
+
+/***/ }),
+/* 11 */
 /***/ (function(module, exports) {
 
 angular
@@ -1435,8 +1465,8 @@ function LoginConfig($stateProvider) {
       views: {
         'main': {
           templateUrl: 'templates/login.template.html',
-          // controller: 'LoginController',
-          // controllerAs: 'login',
+          controller: 'LoginController',
+          controllerAs: 'login',
         },
       },
     })
@@ -1449,7 +1479,37 @@ function LoginConfig($stateProvider) {
 
 
 /***/ }),
-/* 10 */
+/* 12 */
+/***/ (function(module, exports) {
+
+angular
+  .module('app')
+  .controller('LoginController', LoginController)
+
+function LoginController($auth, $state) {
+  this.credentials = {}
+
+  this.authenticate = authenticate
+
+  function authenticate() {
+    $auth
+      .login(this.credentials)
+      .then(redirectToPlaces)
+      .catch(unauthorized)
+
+    function redirectToPlaces() {
+      $state.go('places')
+    }
+
+    function unauthorized(error) {
+      alert('O usuário ou senha que você digitou não coincide com nenhum usuário cadastrado.')
+    }
+  }
+}
+
+
+/***/ }),
+/* 13 */
 /***/ (function(module, exports) {
 
 angular
@@ -1457,18 +1517,18 @@ angular
   .run(LoginRun)
 
 function LoginRun($rootScope, $state, $auth) {
-  $rootScope.$on('$stateChangeStart', logoutInLoginState)
-  $rootScope.$on('$stateChangeStart', requireAuthentication)
-  $state.go('login')
+  const stateRequireLogin = $state.name !== 'login' && $state.name !== 'signup'
+  const isAuthenticated = $auth.isAuthenticated()
 
-  function logoutInLoginState(event, toState) {
-    if (toState.name === 'login') {
-      $auth.logout()
-    }
+
+  if (stateRequireLogin && !isAuthenticated) {
+    $state.go('login')
   }
 
+  $rootScope.$on('$stateChangeStart', requireAuthentication)
+
   function requireAuthentication(event, toState) {
-    let stateRequireLogin = toState.name.startsWith('app.')
+    let stateRequireLogin = toState.name !== 'login' && toState.name !== 'signup'
     let isAuthenticated = $auth.isAuthenticated()
 
     if (stateRequireLogin && !isAuthenticated) {
@@ -1480,7 +1540,44 @@ function LoginRun($rootScope, $state, $auth) {
 
 
 /***/ }),
-/* 11 */
+/* 14 */
+/***/ (function(module, exports) {
+
+angular
+  .module('app')
+  .config(PlacesConfig)
+
+function PlacesConfig($stateProvider) {
+  $stateProvider
+    .state('places', {
+      url: '/places',
+      views: {
+        'main': {
+          templateUrl: 'templates/places.template.html',
+          // controller: 'PlacesController',
+          // controllerAs: 'places',
+        },
+      },
+    })
+}
+
+
+
+/***/ }),
+/* 15 */
+/***/ (function(module, exports) {
+
+angular
+  .module('app')
+  .controller('PlacesController', PlacesController)
+
+function PlacesController() {
+
+}
+
+
+/***/ }),
+/* 16 */
 /***/ (function(module, exports) {
 
 angular
@@ -1493,7 +1590,78 @@ function RoutesConfig($locationProvider, $stateProvider) {
 
 
 /***/ }),
-/* 12 */
+/* 17 */
+/***/ (function(module, exports) {
+
+angular
+  .module('app')
+  .config(SignupConfig)
+
+function SignupConfig($stateProvider) {
+  $stateProvider
+    .state('signup', {
+      url: '/signup',
+      views: {
+        'main': {
+          templateUrl: 'templates/signup.template.html',
+          controller: 'SignupController',
+          controllerAs: 'signup',
+          resolve: {
+            data: Users => Users.create(),
+          },
+        },
+      },
+    })
+}
+
+
+
+/***/ }),
+/* 18 */
+/***/ (function(module, exports) {
+
+angular
+  .module('app')
+  .controller('SignupController', SignupController)
+
+function SignupController(data, $state) {
+  this.data = data
+
+  this.save = save
+
+  function save() {
+    this.data
+      .save()
+      .then(redirectToPlaces)
+
+    function redirectToPlaces() {
+      $state.go('places')
+    }
+  }
+}
+
+
+/***/ }),
+/* 19 */
+/***/ (function(module, exports) {
+
+angular
+  .module('app')
+  .service('Users', UsersService)
+
+function UsersService(Restangular) {
+  const resource = Restangular.service('users')
+
+  this.create = create
+
+  function create() {
+    return resource.one()
+  }
+}
+
+
+/***/ }),
+/* 20 */
 /***/ (function(module, exports) {
 
 /**
@@ -6182,7 +6350,7 @@ angular.module('ui.router.state')
 })(window, window.angular);
 
 /***/ }),
-/* 13 */
+/* 21 */
 /***/ (function(module, exports) {
 
 /**
@@ -40076,15 +40244,15 @@ $provide.value("$locale", {
 !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>');
 
 /***/ }),
-/* 14 */
+/* 22 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(13);
+__webpack_require__(21);
 module.exports = angular;
 
 
 /***/ }),
-/* 15 */
+/* 23 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40205,7 +40373,7 @@ function fromByteArray (uint8) {
 
 
 /***/ }),
-/* 16 */
+/* 24 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -40219,9 +40387,9 @@ function fromByteArray (uint8) {
 
 
 
-var base64 = __webpack_require__(15)
-var ieee754 = __webpack_require__(17)
-var isArray = __webpack_require__(18)
+var base64 = __webpack_require__(23)
+var ieee754 = __webpack_require__(25)
+var isArray = __webpack_require__(26)
 
 exports.Buffer = Buffer
 exports.SlowBuffer = SlowBuffer
@@ -42002,7 +42170,7 @@ function isnan (val) {
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
 
 /***/ }),
-/* 17 */
+/* 25 */
 /***/ (function(module, exports) {
 
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -42092,7 +42260,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
 
 
 /***/ }),
-/* 18 */
+/* 26 */
 /***/ (function(module, exports) {
 
 var toString = {}.toString;
@@ -42103,7 +42271,7 @@ module.exports = Array.isArray || function (arr) {
 
 
 /***/ }),
-/* 19 */
+/* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* global angular */
@@ -42111,38 +42279,38 @@ module.exports = Array.isArray || function (arr) {
 angular.module('minimalist', [])
 
 module.exports = {
-  input: __webpack_require__(36),
-  form: __webpack_require__(32),
+  input: __webpack_require__(44),
+  form: __webpack_require__(40),
   checkbox: __webpack_require__(5),
-  radio: __webpack_require__(43),
+  radio: __webpack_require__(51),
 }
 
 
 /***/ }),
-/* 20 */
+/* 28 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = {
-  input: __webpack_require__(37),
-  email: __webpack_require__(30),
-  password: __webpack_require__(41),
-  hidden: __webpack_require__(35),
-  number: __webpack_require__(39),
-  date: __webpack_require__(26),
-  select: __webpack_require__(47),
+  input: __webpack_require__(45),
+  email: __webpack_require__(38),
+  password: __webpack_require__(49),
+  hidden: __webpack_require__(43),
+  number: __webpack_require__(47),
+  date: __webpack_require__(34),
+  select: __webpack_require__(55),
   actionSheet: __webpack_require__(3),
-  form: __webpack_require__(33),
-  sidenav: __webpack_require__(49),
-  checkbox: __webpack_require__(24),
-  radio: __webpack_require__(44),
-  dialog: __webpack_require__(28),
-  button: __webpack_require__(23),
-  search: __webpack_require__(46),
+  form: __webpack_require__(41),
+  sidenav: __webpack_require__(57),
+  checkbox: __webpack_require__(32),
+  radio: __webpack_require__(52),
+  dialog: __webpack_require__(36),
+  button: __webpack_require__(31),
+  search: __webpack_require__(54),
 }
 
 
 /***/ }),
-/* 21 */
+/* 29 */
 /***/ (function(module, exports) {
 
 const {HTMLElement} = window
@@ -42251,7 +42419,7 @@ module.exports = class MnActionSheet extends HTMLElement {
 
 
 /***/ }),
-/* 22 */
+/* 30 */
 /***/ (function(module, exports) {
 
 const {HTMLElement} = window
@@ -42285,7 +42453,7 @@ module.exports = class MnButton extends HTMLElement {
 
 
 /***/ }),
-/* 23 */
+/* 31 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnSidenavCustomElement()
@@ -42298,7 +42466,7 @@ function MnSidenavCustomElement() {
   }
 
   if (!window.customElements.get('mn-button')) {
-    window.customElements.define('mn-button', __webpack_require__(22))
+    window.customElements.define('mn-button', __webpack_require__(30))
   }
 
   return window.customElements.get('mn-button')
@@ -42306,7 +42474,7 @@ function MnSidenavCustomElement() {
 
 
 /***/ }),
-/* 24 */
+/* 32 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnCheckboxCustomElement()
@@ -42327,7 +42495,7 @@ function MnCheckboxCustomElement() {
 
 
 /***/ }),
-/* 25 */
+/* 33 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const MnInput = __webpack_require__(1)
@@ -42510,7 +42678,7 @@ function newDate(dateString) {
 
 
 /***/ }),
-/* 26 */
+/* 34 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnDateCustomElement()
@@ -42523,7 +42691,7 @@ function MnDateCustomElement() {
   }
 
   if (!window.customElements.get('mn-date')) {
-    window.customElements.define('mn-date', __webpack_require__(25))
+    window.customElements.define('mn-date', __webpack_require__(33))
   }
 
   return window.customElements.get('mn-date')
@@ -42531,7 +42699,7 @@ function MnDateCustomElement() {
 
 
 /***/ }),
-/* 27 */
+/* 35 */
 /***/ (function(module, exports) {
 
 const {HTMLElement} = window
@@ -42648,7 +42816,7 @@ module.exports = class MnDialog extends HTMLElement {
 
 
 /***/ }),
-/* 28 */
+/* 36 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnDialogCustomElement()
@@ -42661,7 +42829,7 @@ function MnDialogCustomElement() {
   }
 
   if (!window.customElements.get('mn-dialog')) {
-    window.customElements.define('mn-dialog', __webpack_require__(27))
+    window.customElements.define('mn-dialog', __webpack_require__(35))
   }
 
   return window.customElements.get('mn-dialog')
@@ -42669,7 +42837,7 @@ function MnDialogCustomElement() {
 
 
 /***/ }),
-/* 29 */
+/* 37 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const MnInput = __webpack_require__(1)
@@ -42691,7 +42859,7 @@ module.exports = class MnEmail extends MnInput {
 
 
 /***/ }),
-/* 30 */
+/* 38 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnEmailCustomElement()
@@ -42704,7 +42872,7 @@ function MnEmailCustomElement() {
   }
 
   if (!window.customElements.get('mn-email')) {
-    window.customElements.define('mn-email', __webpack_require__(29))
+    window.customElements.define('mn-email', __webpack_require__(37))
   }
 
   return window.customElements.get('mn-email')
@@ -42712,7 +42880,7 @@ function MnEmailCustomElement() {
 
 
 /***/ }),
-/* 31 */
+/* 39 */
 /***/ (function(module, exports) {
 
 const {HTMLElement} = window
@@ -42878,7 +43046,7 @@ module.exports = class MnForm extends HTMLElement {
 
 
 /***/ }),
-/* 32 */
+/* 40 */
 /***/ (function(module, exports) {
 
 /* global angular */
@@ -42900,7 +43068,7 @@ function MnFormDirective() {
 
 
 /***/ }),
-/* 33 */
+/* 41 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnFormCustomElement()
@@ -42913,7 +43081,7 @@ function MnFormCustomElement() {
   }
 
   if (!window.customElements.get('mn-form')) {
-    window.customElements.define('mn-form', __webpack_require__(31))
+    window.customElements.define('mn-form', __webpack_require__(39))
   }
 
   return window.customElements.get('mn-form')
@@ -42921,7 +43089,7 @@ function MnFormCustomElement() {
 
 
 /***/ }),
-/* 34 */
+/* 42 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const MnInput = __webpack_require__(1)
@@ -42963,7 +43131,7 @@ module.exports = class MnPassword extends MnInput {
 
 
 /***/ }),
-/* 35 */
+/* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnHiddenCustomElement()
@@ -42976,7 +43144,7 @@ function MnHiddenCustomElement() {
   }
 
   if (!window.customElements.get('mn-hidden')) {
-    window.customElements.define('mn-hidden', __webpack_require__(34))
+    window.customElements.define('mn-hidden', __webpack_require__(42))
   }
 
   return window.customElements.get('mn-hidden')
@@ -42984,7 +43152,7 @@ function MnHiddenCustomElement() {
 
 
 /***/ }),
-/* 36 */
+/* 44 */
 /***/ (function(module, exports) {
 
 /* global angular */
@@ -43043,7 +43211,7 @@ function MnInputDirective() {
 
 
 /***/ }),
-/* 37 */
+/* 45 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnInputCustomElement()
@@ -43064,7 +43232,7 @@ function MnInputCustomElement() {
 
 
 /***/ }),
-/* 38 */
+/* 46 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const MnInput = __webpack_require__(1)
@@ -43294,7 +43462,7 @@ module.exports = class MnNumber extends MnInput {
 
 
 /***/ }),
-/* 39 */
+/* 47 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnNumberCustomElement()
@@ -43307,7 +43475,7 @@ function MnNumberCustomElement() {
   }
 
   if (!window.customElements.get('mn-number')) {
-    window.customElements.define('mn-number', __webpack_require__(38))
+    window.customElements.define('mn-number', __webpack_require__(46))
   }
 
   return window.customElements.get('mn-number')
@@ -43315,7 +43483,7 @@ function MnNumberCustomElement() {
 
 
 /***/ }),
-/* 40 */
+/* 48 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const MnInput = __webpack_require__(1)
@@ -43392,7 +43560,7 @@ module.exports = class MnPassword extends MnInput {
 
 
 /***/ }),
-/* 41 */
+/* 49 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnPasswordCustomElement()
@@ -43405,7 +43573,7 @@ function MnPasswordCustomElement() {
   }
 
   if (!window.customElements.get('mn-password')) {
-    window.customElements.define('mn-password', __webpack_require__(40))
+    window.customElements.define('mn-password', __webpack_require__(48))
   }
 
   return window.customElements.get('mn-password')
@@ -43413,7 +43581,7 @@ function MnPasswordCustomElement() {
 
 
 /***/ }),
-/* 42 */
+/* 50 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const MnCheckbox = __webpack_require__(4)
@@ -43515,7 +43683,7 @@ module.exports = class MnRadio extends MnCheckbox {
 
 
 /***/ }),
-/* 43 */
+/* 51 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* global angular */
@@ -43533,7 +43701,7 @@ function MnRadioDirective() {
 
 
 /***/ }),
-/* 44 */
+/* 52 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnRadioCustomElement()
@@ -43546,7 +43714,7 @@ function MnRadioCustomElement() {
   }
 
   if (!window.customElements.get('mn-radio')) {
-    window.customElements.define('mn-radio', __webpack_require__(42))
+    window.customElements.define('mn-radio', __webpack_require__(50))
   }
 
   return window.customElements.get('mn-radio')
@@ -43554,7 +43722,7 @@ function MnRadioCustomElement() {
 
 
 /***/ }),
-/* 45 */
+/* 53 */
 /***/ (function(module, exports, __webpack_require__) {
 
 const MnSelect = __webpack_require__(6)
@@ -43693,7 +43861,7 @@ module.exports = class MnSearch extends MnSelect {
 
 
 /***/ }),
-/* 46 */
+/* 54 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnSelectCustomElement()
@@ -43706,7 +43874,7 @@ function MnSelectCustomElement() {
   }
 
   if (!window.customElements.get('mn-search')) {
-    window.customElements.define('mn-search', __webpack_require__(45))
+    window.customElements.define('mn-search', __webpack_require__(53))
   }
 
   return window.customElements.get('mn-search')
@@ -43714,7 +43882,7 @@ function MnSelectCustomElement() {
 
 
 /***/ }),
-/* 47 */
+/* 55 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnSelectCustomElement()
@@ -43735,7 +43903,7 @@ function MnSelectCustomElement() {
 
 
 /***/ }),
-/* 48 */
+/* 56 */
 /***/ (function(module, exports) {
 
 const {HTMLElement} = window
@@ -43833,7 +44001,7 @@ module.exports = class MnSidenav extends HTMLElement {
 
 
 /***/ }),
-/* 49 */
+/* 57 */
 /***/ (function(module, exports, __webpack_require__) {
 
 module.exports = MnSidenavCustomElement()
@@ -43846,7 +44014,7 @@ function MnSidenavCustomElement() {
   }
 
   if (!window.customElements.get('mn-sidenav')) {
-    window.customElements.define('mn-sidenav', __webpack_require__(48))
+    window.customElements.define('mn-sidenav', __webpack_require__(56))
   }
 
   return window.customElements.get('mn-sidenav')
@@ -43854,7 +44022,7 @@ function MnSidenavCustomElement() {
 
 
 /***/ }),
-/* 50 */
+/* 58 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -43866,7 +44034,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   /* global define, require */
   // https://github.com/umdjs/umd/blob/master/templates/returnExports.js
   if (true) {
-    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(51), __webpack_require__(14)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
+    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(59), __webpack_require__(22)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory),
 				__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 				(__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__),
 				__WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
@@ -45315,7 +45483,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 51 */
+/* 59 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global, module) {var __WEBPACK_AMD_DEFINE_RESULT__;/**
@@ -62404,10 +62572,10 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
   }
 }.call(this));
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(53)(module)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7), __webpack_require__(61)(module)))
 
 /***/ }),
-/* 52 */
+/* 60 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -62761,7 +62929,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
         var buffer;
         if (typeof module !== 'undefined' && module.exports) {
             try {
-                buffer = __webpack_require__(16).Buffer;
+                buffer = __webpack_require__(24).Buffer;
             }
             catch (err) {
             }
@@ -63372,7 +63540,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_
 
 
 /***/ }),
-/* 53 */
+/* 61 */
 /***/ (function(module, exports) {
 
 module.exports = function(module) {
@@ -63400,13 +63568,21 @@ module.exports = function(module) {
 
 
 /***/ }),
-/* 54 */
+/* 62 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(8);
 __webpack_require__(9);
+__webpack_require__(8);
 __webpack_require__(10);
-module.exports = __webpack_require__(11);
+__webpack_require__(11);
+__webpack_require__(12);
+__webpack_require__(13);
+__webpack_require__(14);
+__webpack_require__(15);
+__webpack_require__(16);
+__webpack_require__(17);
+__webpack_require__(18);
+module.exports = __webpack_require__(19);
 
 
 /***/ })

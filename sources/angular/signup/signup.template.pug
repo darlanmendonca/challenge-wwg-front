@@ -1,0 +1,11 @@
+section
+  .mn-layout-container
+    p Signup below, or <a ui-sref="login">login</a>
+
+    mn-form(submit='signup.save()')
+      .mn-layout-column.mn-layout-sm-row
+        mn-email.flex(placeholder='Email' required ng-model='signup.data.email')
+        mn-password.flex(placeholder='Password' required ng-model='signup.data.password')
+
+      .mn-layout-row.align-end
+        mn-button.raised(submit) Signup

@@ -1,13 +1,11 @@
 section
   .mn-layout-container
-    p First, identify yourself
+    p First, identify yourself, or <a ui-sref="signup">signup</a>
 
-    //- mn-form
-      .mn-layout-row
-        //- mn-radio(placeholder='Login' checked)
-        //- mn-radio(placeholder='Signup')
+    mn-form(submit='login.authenticate()')
+      .mn-layout-column.mn-layout-sm-row
+        mn-email.flex(placeholder='Email' required ng-model='login.credentials.email')
+        mn-password.flex(placeholder='Password' required ng-model='login.credentials.password')
 
-      //- .mn-layout-column.mn-layout-sm-row
-        mn-email.flex(placeholder='Email' required)
-        mn-password.flex(placeholder='Password' required)
-        mn-password.flex(placeholder='Confirm Password' required)
+      .mn-layout-row.align-end
+        mn-button.raised(submit) Login
