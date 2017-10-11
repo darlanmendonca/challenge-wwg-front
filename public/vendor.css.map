@@ -1,0 +1,12 @@
+{
+	"version": 3,
+	"file": "vendor.css",
+	"sources": [
+		"../sources/styles/app.scss",
+		"../node_modules/open-color/open-color.scss",
+		"../sources/styles/identity/typography.scss",
+		"../sources/styles/identity/background.scss"
+	],
+	"names": [],
+	"mappings": "AEAA,AAAA,IAAI,AAAC,CACH,WAAW,CAAE,UAAU,CACvB,MAAM,CAAE,CAAC,CACT,sBAAsB,CAAE,WAAW,CACpC,AAED,AAAA,EAAE,AAAC,CAAC,WAAW,CAAE,MAAM,CAAG,ACJ1B,AAAA,IAAI,AAAC,CACH,gBAAgB,CFyBX,OAAO,CExBb"
+}

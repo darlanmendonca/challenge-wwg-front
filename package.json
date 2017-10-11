@@ -1,0 +1,47 @@
+{
+  "name": "challenge-wwg-front",
+  "private": true,
+  "version": "1.0.0",
+  "description": "a code challenge",
+  "scripts": {
+    "prestart": "scripts/api.sh",
+    "start": "scripts/start.sh",
+    "lint": "scripts/lint.sh",
+    "sass": "scripts/sass.sh",
+    "pug": "scripts/pug.sh",
+    "prejavascript": "scripts/lint.sh",
+    "javascript": "scripts/javascript.sh"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/darlanmendonca/challenge-wwg-front.git"
+  },
+  "keywords": [],
+  "author": "Darlan Mendonça <darlanmendonca@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/darlanmendonca/challenge-wwg-front/issues"
+  },
+  "homepage": "https://github.com/darlanmendonca/challenge-wwg-front#readme",
+  "engines": {
+    "node": ">=0.7.0"
+  },
+  "dependencies": {
+    "angular": "^1.6.4",
+    "minimalist": "git+https://github.com/reserva-facil/minimalist.git",
+    "open-color": "^1.5.1"
+  },
+  "devDependencies": {
+    "angular-mocks": "^1.6.4",
+    "browser-sync": "^2.18.11",
+    "eslint": "^3.19.0",
+    "eslint-config-mn-component": "^1.1.0",
+    "challenge-wwg": "git+https://github.com/darlanmendonca/challenge-wwg.git",
+    "http-server": "^0.10.0",
+    "node-sass": "^4.5.2",
+    "pug-cli": "^1.0.0-alpha6",
+    "uglify-es": "^3.0.10",
+    "webpack": "^2.5.1",
+    "yargs": "^8.0.1"
+  }
+}
