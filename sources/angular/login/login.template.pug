@@ -1,0 +1,13 @@
+section
+  .mn-layout-container
+    p First, identify yourself
+
+    //- mn-form
+      .mn-layout-row
+        //- mn-radio(placeholder='Login' checked)
+        //- mn-radio(placeholder='Signup')
+
+      //- .mn-layout-column.mn-layout-sm-row
+        mn-email.flex(placeholder='Email' required)
+        mn-password.flex(placeholder='Password' required)
+        mn-password.flex(placeholder='Confirm Password' required)

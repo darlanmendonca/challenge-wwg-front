@@ -2,6 +2,7 @@ html
   head
     title wwg (where we go)
     meta(name='viewport' content='width=device-width, user-scalable=no')
+    base(href='/')
 
     script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js')
     script(src='https://cdnjs.cloudflare.com/ajax/libs/angular-resource/1.6.5/angular-resource.js')
@@ -9,11 +10,13 @@ html
     link(rel='stylesheet' href='/vendor.css')
     link(rel='stylesheet' href='/minimalist.css')
 
-  body
+  body(ng-app='app')
     .mn-layout-container
       h2 where we go?
 
-    section
+    div(ui-view='main')
+
+    //- section
       .mn-layout-container
         p First, identify yourself
 
@@ -27,7 +30,7 @@ html
             mn-password.flex(placeholder='Password' required)
             mn-password.flex(placeholder='Confirm Password' required)
 
-    section
+    //- section
       .mn-layout-container
         p Choose restaurants that you want to go
       .horizontal-scroller
@@ -52,7 +55,7 @@ html
         .mn-card.padding test 19
         .mn-card.padding test 20
 
-    section
+    //- section
       .mn-layout-container
         p The restaurants most voted are
 
