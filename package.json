@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "angular": "^1.6.4",
+    "challenge-wwg": "git+https://github.com/darlanmendonca/challenge-wwg.git",
     "minimalist": "git+https://github.com/reserva-facil/minimalist.git#main-scss",
     "open-color": "^1.5.1"
   },

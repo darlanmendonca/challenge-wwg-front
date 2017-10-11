@@ -9,8 +9,11 @@ function PlacesConfig($stateProvider) {
       views: {
         'main': {
           templateUrl: 'templates/places.template.html',
-          // controller: 'PlacesController',
-          // controllerAs: 'places',
+          controller: 'PlacesController',
+          controllerAs: 'places',
+          resolve: {
+            list: Places => Places.list(),
+          },
         },
       },
     })

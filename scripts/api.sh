@@ -2,4 +2,4 @@
 
 set -e
 
-node node_modules/challenge-wwg/sources/index.js &
+NODE_ENV=development node node_modules/challenge-wwg/sources/index.js &
